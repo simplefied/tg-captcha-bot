@@ -20,3 +20,9 @@ after_fail_message = "User didn't pass the validation and banned."
 
 # Show success and failure messages or delete them. Pick "show" or "del"
 print_success_and_fail_messages_strategy = "show"
+
+# Respond message for passed user
+passed_respond = "Validation passed!"
+
+# Respond message for other users
+others_respond = "This button isn't for you"

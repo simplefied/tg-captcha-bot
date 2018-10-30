@@ -21,6 +21,8 @@ type Config struct {
 	WelcomeMessage      string `mapstructure:"welcome_message"`
 	AfterSuccessMessage string `mapstructure:"after_success_message"`
 	AfterFailMessage    string `mapstructure:"after_fail_message"`
+	PassedRespond       string `mapstructure:"passed_respond"`
+	OthersRespond       string `mapstructure:"others_respond"`
 	PrintSuccessAndFail string `mapstructure:"print_success_and_fail_messages_strategy"`
 }
 
@@ -110,7 +112,7 @@ func challengeUser(m *tb.Message) {
 // passChallenge is used when user passed the validation
 func passChallenge(c *tb.Callback) {
 	if c.Message.ReplyTo.Sender.ID != c.Sender.ID {
-		bot.Respond(c, &tb.CallbackResponse{Text: "This button isn't for you"})
+		bot.Respond(c, &tb.CallbackResponse{Text: config.OthersRespond})
 		return
 	}
 	passedUsers[c.Sender.ID] = struct{}{}
@@ -124,7 +126,7 @@ func passChallenge(c *tb.Callback) {
 	log.Printf("User: %v passed the challenge in chat: %v", c.Sender, c.Message.Chat)
 	newChatMember := tb.ChatMember{User: c.Sender, RestrictedUntil: tb.Forever(), Rights: tb.Rights{CanSendMessages: true}}
 	bot.Promote(c.Message.Chat, &newChatMember)
-	bot.Respond(c, &tb.CallbackResponse{Text: "Validation passed!"})
+	bot.Respond(c, &tb.CallbackResponse{Text: config.PassedRespond})
 }
 
 func readConfig() (err error) {

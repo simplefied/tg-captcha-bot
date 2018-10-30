@@ -15,6 +15,8 @@ import (
 
 // Config struct for toml config file
 type Config struct {
+	RestrictSeconds     uint   `mapstructure:"restrict_seconds"`
+	BanSeconds          uint   `mapstructure:"ban_seconds"`
 	ButtonText          string `mapstructure:"button_text"`
 	WelcomeMessage      string `mapstructure:"welcome_message"`
 	AfterSuccessMessage string `mapstructure:"after_success_message"`
@@ -86,10 +88,10 @@ func challengeUser(m *tb.Message) {
 	}}}
 	challengeMsg, _ := bot.Reply(m, config.WelcomeMessage, &tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 
-	time.AfterFunc(30*time.Second, func() {
+	time.AfterFunc(time.Duration(config.RestrictSeconds) * time.Second, func() {
 		_, passed := passedUsers[m.UserJoined.ID]
 		if !passed {
-			chatMember := tb.ChatMember{User: m.UserJoined, RestrictedUntil: tb.Forever()}
+			chatMember := tb.ChatMember{User: m.UserJoined, RestrictedUntil: time.Now().Unix() + int64(config.BanSeconds)}
 			bot.Ban(m.Chat, &chatMember)
 
 			if config.PrintSuccessAndFail == "show" {

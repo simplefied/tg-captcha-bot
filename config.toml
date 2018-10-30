@@ -1,5 +1,11 @@
 # Config file for Telegram Captcha Bot
 
+# Captcha button timeout
+restrict_seconds = 30
+
+# Ban duration (set 0 to ban forever)
+ban_seconds = 0
+
 # Button text
 button_text = "I'm not a robot!"
 

@@ -15,6 +15,7 @@ import (
 
 // Config struct for toml config file
 type Config struct {
+	SilentMode          bool   `mapstructure:"silent_mode"`
 	ButtonText          string `mapstructure:"button_text"`
 	WelcomeMessage      string `mapstructure:"welcome_message"`
 	AfterSuccessMessage string `mapstructure:"after_success_message"`
@@ -51,6 +52,7 @@ func main() {
 	}
 
 	bot.Handle(tb.OnUserJoined, challengeUser)
+	bot.Handle(tb.OnUserLeft, cleanRemoval)
 	bot.Handle(tb.OnCallback, passChallenge)
 
 	bot.Handle("/healthz", func(m *tb.Message) {
@@ -105,6 +107,16 @@ func challengeUser(m *tb.Message) {
 	})
 }
 
+func cleanRemoval(m *tb.Message) {
+	if m.UserLeft.ID != bot.Me.ID {
+		return
+	}
+
+	if config.SilentMode {
+		bot.Delete(m)
+	}
+}
+
 // passChallenge is used when user passed the validation
 func passChallenge(c *tb.Callback) {
 	if c.Message.ReplyTo.Sender.ID != c.Sender.ID {
@@ -116,6 +128,10 @@ func passChallenge(c *tb.Callback) {
 	if config.PrintSuccessAndFail == "show" {
 		bot.Edit(c.Message, config.AfterSuccessMessage)
 	} else if config.PrintSuccessAndFail == "del" {
+		if config.SilentMode {
+			bot.Delete(c.Message.ReplyTo)
+		}
+
 		bot.Delete(c.Message)
 	}
 

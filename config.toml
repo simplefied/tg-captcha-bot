@@ -1,5 +1,8 @@
 # Config file for Telegram Captcha Bot
 
+# Delete all joins and removals (applicable only for del strategy)
+silent_mode = false
+
 # Captcha button timeout
 restrict_seconds = 30
 

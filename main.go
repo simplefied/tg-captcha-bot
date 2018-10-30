@@ -108,7 +108,7 @@ func challengeUser(m *tb.Message) {
 }
 
 func cleanRemoval(m *tb.Message) {
-	if m.UserLeft.ID != bot.Me.ID {
+	if m.Sender.ID != bot.Me.ID {
 		return
 	}
 
